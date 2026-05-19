@@ -69,11 +69,38 @@ python wafer_dbscan.py \
 | `1.5` | 上下左右＋斜め（8方向） |
 | `2.5` | 2チップ先まで許容 |
 
+## Wafer Map 可視化 (visualize_wafermap.py)
+
+DBSCAN結果をグリッド形式のWafer Mapとして描画します。各チップにクラスタIDが表示されます。
+
+```bash
+# 全Waferの画像を出力
+python visualize_wafermap.py --input result.csv --wafer_id WAFER_ID --out_dir maps
+
+# 特定Waferだけ
+python visualize_wafermap.py --input result.csv --wafer_id WAFER_ID --wafer W01
+
+# 画面表示のみ（ファイル保存なし）
+python visualize_wafermap.py --input result.csv --wafer_id WAFER_ID --show --no_save
+```
+
+| Option | Default | Description |
+|---|---|---|
+| `--input` | (required) | wafer_dbscan.py の出力CSV |
+| `--wafer_id` | (なし) | Wafer IDカラム名 |
+| `--wafer` | (全Wafer) | 描画対象のWafer IDを指定 (複数可) |
+| `--out_dir` | `.` | 画像出力先ディレクトリ |
+| `--format` | `png` | 出力形式 (`png` / `pdf` / `svg`) |
+| `--show` | - | インタラクティブ表示 |
+| `--no_save` | - | ファイル保存をスキップ |
+| `--no_labels` | - | チップ上のクラスタID表示を消す |
+
 ## Quick Start (サンプルデータ)
 
 ```bash
 python generate_sample.py
-python wafer_dbscan.py --input sample_wafer.csv --label BIN --defect_value 0 --wafer_id WAFER_ID
+python wafer_dbscan.py --input sample_wafer.csv --label BIN --defect_value 0 --wafer_id WAFER_ID --output result.csv
+python visualize_wafermap.py --input result.csv --wafer_id WAFER_ID --out_dir maps
 ```
 
 ## License

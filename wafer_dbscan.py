@@ -163,7 +163,7 @@ def _plot_single(
     defects = result[result["is_defect"]]
     cluster_ids = defects["cluster_id"].dropna().unique()
 
-    cmap = plt.cm.get_cmap("tab10", max(len(cluster_ids), 1))
+    cmap = plt.colormaps.get_cmap("tab10").resampled(max(len(cluster_ids), 1))
     handles = []
 
     for cid in sorted(cluster_ids):
