@@ -204,8 +204,8 @@ def main():
                         help="DBSCAN neighbourhood radius in chip-pitch units (default 1.5)")
     parser.add_argument("--min_samples", type=int, default=3,
                         help="DBSCAN minimum chips to form a cluster (default 3)")
-    parser.add_argument("--output", default="result.csv", help="Output CSV file")
-    parser.add_argument("--plot", default="wafer_clusters.png", help="Output plot image")
+    parser.add_argument("--out_dir", default=None,
+                        help="Output directory (default: auto-generated from eps/min_samples)")
     parser.add_argument("--no_plot", action="store_true", help="Skip plot generation")
     args = parser.parse_args()
 
@@ -220,6 +220,14 @@ def main():
 
     df[args.x_col] = pd.to_numeric(df[args.x_col], errors="coerce")
     df[args.y_col] = pd.to_numeric(df[args.y_col], errors="coerce")
+
+    # --- build output directory name from parameters -----------------------
+    eps_str = f"{args.eps:g}".replace(".", "p")
+    if args.out_dir is None:
+        out_dir = f"eps{eps_str}_min{args.min_samples}"
+    else:
+        out_dir = args.out_dir
+    os.makedirs(out_dir, exist_ok=True)
 
     result = run_dbscan(
         df,
@@ -241,11 +249,14 @@ def main():
     if args.wafer_id:
         out_cols.append(args.wafer_id)
     out_cols += [args.x_col, args.y_col, args.label, "is_defect", "cluster_id"]
-    result[out_cols].to_csv(args.output, index=False)
-    print(f"\nResult saved to {args.output}")
+
+    result_path = os.path.join(out_dir, "result.csv")
+    result[out_cols].to_csv(result_path, index=False)
+    print(f"\nResult saved to {result_path}")
 
     if not args.no_plot:
-        visualize(result, args.x_col, args.y_col, args.plot, args.wafer_id)
+        plot_path = os.path.join(out_dir, "wafer_clusters.png")
+        visualize(result, args.x_col, args.y_col, plot_path, args.wafer_id)
 
 
 if __name__ == "__main__":

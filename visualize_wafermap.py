@@ -131,8 +131,8 @@ def main():
                         help="Wafer ID column name (omit if single wafer)")
     parser.add_argument("--wafer", nargs="*", default=None,
                         help="Specific wafer IDs to plot (omit for all)")
-    parser.add_argument("--out_dir", default=".",
-                        help="Directory for output images (default: current dir)")
+    parser.add_argument("--out_dir", default=None,
+                        help="Directory for output images (default: same dir as input file)")
     parser.add_argument("--format", default="png", choices=["png", "pdf", "svg"],
                         help="Image format (default: png)")
     parser.add_argument("--show", action="store_true",
@@ -154,6 +154,10 @@ def main():
     df["is_defect"] = df["is_defect"].astype(str).str.strip().str.lower() == "true"
     df["cluster_id"] = pd.to_numeric(df["cluster_id"], errors="coerce")
     df["cluster_id"] = df["cluster_id"].astype("Int64")
+
+    if args.out_dir is None:
+        args.out_dir = os.path.dirname(os.path.abspath(args.input))
+    os.makedirs(args.out_dir, exist_ok=True)
 
     show_labels = not args.no_labels
 
