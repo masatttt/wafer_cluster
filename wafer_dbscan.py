@@ -234,7 +234,11 @@ def main():
         print("\nCluster summary:")
         print(summary.to_string(index=False))
 
-    result.to_csv(args.output, index=False)
+    out_cols = []
+    if args.wafer_id:
+        out_cols.append(args.wafer_id)
+    out_cols += [args.x_col, args.y_col, args.label, "is_defect", "cluster_id"]
+    result[out_cols].to_csv(args.output, index=False)
     print(f"\nResult saved to {args.output}")
 
     if not args.no_plot:

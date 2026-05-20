@@ -82,6 +82,11 @@ def build_wafer_map(
     ax.set_xlim(x_min - 1, x_max + 1)
     ax.set_ylim(y_max + 1, y_min - 1)  # invert Y
     ax.set_aspect("equal")
+
+    from matplotlib.ticker import MaxNLocator
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
     ax.set_xlabel(x_col)
     ax.set_ylabel(y_col)
     ax.set_title(title, fontsize=11, fontweight="bold")
