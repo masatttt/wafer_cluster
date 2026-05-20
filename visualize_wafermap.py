@@ -45,7 +45,7 @@ def build_wafer_map(
     good_color = "#D9D9D9"
     noise_color = "#222222"
     cluster_cmap = plt.colormaps.get_cmap("tab10").resampled(max(len(cluster_ids), 1))
-    cluster_colors = {cid: cluster_cmap(i % 10) for i, cid in enumerate(cluster_ids)}
+    cluster_colors = {cid: tuple(cluster_cmap(i / max(len(cluster_ids), 1))) for i, cid in enumerate(cluster_ids)}
 
     legend_handles = []
 
@@ -151,6 +151,9 @@ def main():
 
     df[args.x_col] = pd.to_numeric(df[args.x_col], errors="coerce")
     df[args.y_col] = pd.to_numeric(df[args.y_col], errors="coerce")
+    df["is_defect"] = df["is_defect"].astype(str).str.strip().str.lower() == "true"
+    df["cluster_id"] = pd.to_numeric(df["cluster_id"], errors="coerce")
+    df["cluster_id"] = df["cluster_id"].astype("Int64")
 
     show_labels = not args.no_labels
 
