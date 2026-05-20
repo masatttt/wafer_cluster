@@ -218,6 +218,9 @@ def main():
         if col not in df.columns:
             sys.exit(f"Column '{col}' not found. Available: {list(df.columns)}")
 
+    df[args.x_col] = pd.to_numeric(df[args.x_col], errors="coerce")
+    df[args.y_col] = pd.to_numeric(df[args.y_col], errors="coerce")
+
     result = run_dbscan(
         df,
         x_col=args.x_col,

@@ -149,6 +149,9 @@ def main():
         if col not in df.columns:
             sys.exit(f"Column '{col}' not found. Is this a wafer_dbscan.py result file?")
 
+    df[args.x_col] = pd.to_numeric(df[args.x_col], errors="coerce")
+    df[args.y_col] = pd.to_numeric(df[args.y_col], errors="coerce")
+
     show_labels = not args.no_labels
 
     if args.wafer_id is None:
