@@ -109,7 +109,16 @@ def render_single(
     df: pd.DataFrame, x_col: str, y_col: str, title: str,
     out_path: str | None, show: bool, show_labels: bool,
 ) -> None:
-    fig, ax = plt.subplots(figsize=(10, 10))
+    x_range = df[x_col].max() - df[x_col].min() + 2
+    y_range = df[y_col].max() - df[y_col].min() + 2
+    base_size = 10
+    if x_range >= y_range:
+        fig_w, fig_h = base_size, base_size * y_range / x_range
+    else:
+        fig_w, fig_h = base_size * x_range / y_range, base_size
+    fig_h = max(fig_h, 3)
+    fig_w = max(fig_w, 3)
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
     build_wafer_map(df, x_col, y_col, ax, title)
     if show_labels:
         add_cluster_labels(df, x_col, y_col, ax)
