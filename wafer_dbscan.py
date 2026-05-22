@@ -223,10 +223,9 @@ def main():
 
     # --- build output directory name from parameters -----------------------
     eps_str = f"{args.eps:g}".replace(".", "p")
-    if args.out_dir is None:
-        out_dir = f"eps{eps_str}_min{args.min_samples}"
-    else:
-        out_dir = args.out_dir
+    condition_dir = f"eps{eps_str}_min{args.min_samples}"
+    base_dir = args.out_dir if args.out_dir else "."
+    out_dir = os.path.join(base_dir, condition_dir)
     os.makedirs(out_dir, exist_ok=True)
 
     result = run_dbscan(
