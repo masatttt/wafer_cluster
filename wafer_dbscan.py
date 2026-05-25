@@ -30,6 +30,7 @@ def run_dbscan_single(
     defect_value,
     eps: float,
     min_samples: int,
+    negate: bool = False,
 ) -> pd.DataFrame:
     """Run DBSCAN on a single wafer's data."""
     result = df.copy()
@@ -40,7 +41,10 @@ def run_dbscan_single(
     except (ValueError, TypeError):
         typed_defect = defect_value
 
-    result["is_defect"] = result[label_col] == typed_defect
+    if negate:
+        result["is_defect"] = result[label_col] != typed_defect
+    else:
+        result["is_defect"] = result[label_col] == typed_defect
 
     defect_mask = result["is_defect"]
     result["cluster_id"] = pd.NA
@@ -66,12 +70,13 @@ def run_dbscan(
     eps: float,
     min_samples: int,
     wafer_col: str | None = None,
+    negate: bool = False,
 ) -> pd.DataFrame:
     """Run DBSCAN per wafer. If wafer_col is None, treat all data as one wafer."""
 
     if wafer_col is None:
         result = run_dbscan_single(
-            df, x_col, y_col, label_col, defect_value, eps, min_samples
+            df, x_col, y_col, label_col, defect_value, eps, min_samples, negate
         )
         _print_stats(result, "ALL")
         return result
@@ -79,7 +84,7 @@ def run_dbscan(
     parts = []
     for wafer_id, group in df.groupby(wafer_col, sort=True):
         part = run_dbscan_single(
-            group, x_col, y_col, label_col, defect_value, eps, min_samples
+            group, x_col, y_col, label_col, defect_value, eps, min_samples, negate
         )
         _print_stats(part, wafer_id)
         parts.append(part)
@@ -198,6 +203,8 @@ def main():
     parser.add_argument("--y_col", default="Y", help="Column name for Y coordinate")
     parser.add_argument("--label", required=True, help="Column name used as defect flag")
     parser.add_argument("--defect_value", required=True, help="Value that indicates a defect")
+    parser.add_argument("--negate", action="store_true",
+                        help="Invert condition: treat chips that do NOT match defect_value as defective")
     parser.add_argument("--wafer_id", default=None,
                         help="Column name for wafer ID (omit to treat all data as one wafer)")
     parser.add_argument("--eps", type=float, default=1.5,
@@ -237,6 +244,7 @@ def main():
         eps=args.eps,
         min_samples=args.min_samples,
         wafer_col=args.wafer_id,
+        negate=args.negate,
     )
 
     summary = summarize_clusters(result, args.x_col, args.y_col, args.wafer_id)
