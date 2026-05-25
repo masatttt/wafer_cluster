@@ -243,6 +243,9 @@ def main():
     if not summary.empty:
         print("\nCluster summary:")
         print(summary.to_string(index=False))
+        summary_path = os.path.join(out_dir, "cluster_summary.csv")
+        summary.to_csv(summary_path, index=False)
+        print(f"Cluster summary saved to {summary_path}")
 
     out_cols = []
     if args.wafer_id:
@@ -251,7 +254,7 @@ def main():
 
     result_path = os.path.join(out_dir, "result.csv")
     result[out_cols].to_csv(result_path, index=False)
-    print(f"\nResult saved to {result_path}")
+    print(f"Result saved to {result_path}")
 
     if not args.no_plot:
         plot_path = os.path.join(out_dir, "wafer_clusters.png")
